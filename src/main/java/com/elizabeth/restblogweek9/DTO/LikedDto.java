@@ -1,2 +1,8 @@
-package com.elizabeth.restblogweek9.DTO;public class LikedDto {
+package com.elizabeth.restblogweek9.DTO;
+
+import lombok.Data;
+
+@Data
+public class LikedDto {
+    private boolean isLiked;
 }

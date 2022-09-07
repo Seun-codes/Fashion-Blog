@@ -1,2 +1,11 @@
-package com.elizabeth.restblogweek9.repositories;public class UserRepo {
+package com.elizabeth.restblogweek9.repositories;
+
+import com.elizabeth.restblogweek9.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Integer> {
+
+    User findByEmail(String email);
 }
