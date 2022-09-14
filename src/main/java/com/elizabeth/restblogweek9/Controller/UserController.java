@@ -1,22 +1,20 @@
 package com.elizabeth.restblogweek9.Controller;
 
-import com.elizabeth.restblogweek9.DTO.CommentDto;
-import com.elizabeth.restblogweek9.DTO.LikedDto;
-import com.elizabeth.restblogweek9.DTO.PostDto;
-import com.elizabeth.restblogweek9.DTO.UserDto;
-import com.elizabeth.restblogweek9.Response.CommentResponse;
-import com.elizabeth.restblogweek9.Response.CreatePostResponse;
-import com.elizabeth.restblogweek9.Response.LikeResponse;
-import com.elizabeth.restblogweek9.Response.RegisterResponse;
+import com.elizabeth.restblogweek9.DTO.*;
+import com.elizabeth.restblogweek9.Response.*;
 import com.elizabeth.restblogweek9.ServiceImpl.UserServiceImpl;
+import com.elizabeth.restblogweek9.model.Post;
 import com.elizabeth.restblogweek9.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController @Slf4j
 @RequestMapping("/api")
@@ -29,22 +27,28 @@ public class UserController {
 @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@RequestBody UserDto userDto){
         log.info("Successfully Registered {} " , userDto.getEmail());
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/register").toUriString());
-        return ResponseEntity.created(uri).body( userService.registerUser(userDto));
+        return new ResponseEntity<>( userService.registerUser(userDto), CREATED);
     }
     @PostMapping("/create")
     public ResponseEntity<CreatePostResponse> create(@RequestBody PostDto postDto){
         log.info("Successfully Created A post With Title:  {} " , postDto.getTitle());
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/create").toUriString());
-        return ResponseEntity.created(uri).body( userService.createPost(postDto));
+
+        return new ResponseEntity<>(userService.createPost(postDto), CREATED);
     }
+@GetMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginDto loginDto){
+    //log.info("Successful Login {} ", loginDto.getEmail());
+    return  new ResponseEntity<>(userService.userLogin(loginDto), HttpStatus.OK);
+    }
+
+
     @PostMapping("/comment/{user_id}/{post_id}")
     public ResponseEntity<CommentResponse> comment(@PathVariable(value = "user_id") Integer user_id,
                                                    @PathVariable(value = "post_id") Integer post_id,
                                                    @RequestBody CommentDto commentDto){
         log.info("Successfully commented :  {} " , commentDto.getComment());
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/comment").toUriString());
-        return ResponseEntity.created(uri).body( userService.comments(user_id , post_id , commentDto));
+       // URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/comment").toUriString());
+        return new ResponseEntity<>( userService.comments(user_id , post_id , commentDto) , CREATED);
     }
     @PostMapping("/like/{user_id}/{post_id}")
     public ResponseEntity<LikeResponse> like(@PathVariable(value = "user_id") Integer user_id,
@@ -54,5 +58,14 @@ public class UserController {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/like").toUriString());
         return ResponseEntity.created(uri).body( userService.like(user_id , post_id , likeDto));
     }
+@GetMapping("/searchPost/{keyword}")
+    public ResponseEntity<SearchPostResponse> searchPost(@PathVariable(  value = "keyword") String keyword){
+        return new ResponseEntity<>(userService.postSearch(keyword) , HttpStatus.OK);
+    }
+    @GetMapping(value = "/post/{id}")
+    public ResponseEntity<Post> searchComment(@PathVariable(  value = "id") Integer id){
+        return ResponseEntity.ok().body(userService.findPostById(id));
+    }
+
 
 }

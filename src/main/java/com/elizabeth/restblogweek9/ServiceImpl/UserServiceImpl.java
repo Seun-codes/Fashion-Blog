@@ -14,10 +14,13 @@ import com.elizabeth.restblogweek9.repositories.LikeRepository;
 import com.elizabeth.restblogweek9.repositories.PostRepository;
 import com.elizabeth.restblogweek9.repositories.UserRepository;
 import com.elizabeth.restblogweek9.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 @Service
@@ -26,7 +29,7 @@ public class UserServiceImpl implements UserService {
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-
+@Autowired
     public UserServiceImpl(CommentRepository commentRepository, LikeRepository likeRepository, PostRepository postRepository, UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.likeRepository = likeRepository;
@@ -46,7 +49,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(userDto.getPassword());
         userRepository.save(user);
 
-        return new RegisterResponse("Registration is successful", LocalDateTime.now(),user);
+        return new RegisterResponse("Registration is successful", LocalDateTime.now());
     }
 
     @Override
@@ -57,10 +60,10 @@ public class UserServiceImpl implements UserService {
             if(user.getPassword().equals(loginDto.getPassword())){
                 response = new LoginResponse("success", LocalDateTime.now());
 
-            }
         }else{
                 response =new LoginResponse("wrong password", LocalDateTime.now());
     }
+            }
 
         return response;
     }
@@ -72,7 +75,7 @@ public class UserServiceImpl implements UserService {
         User user = findUserById(postDto.getUser_id());
         newPost.setTitle(postDto.getTitle());
         newPost.setDescription(postDto.getDescription());
-        newPost.setSlug(postDto.getTitle());
+        newPost.setSlug(makeSlug(postDto.getTitle()));
         newPost.setImage(postDto.getImage());
         newPost.setUser(user);
         postRepository.save(newPost);
@@ -122,13 +125,20 @@ public class UserServiceImpl implements UserService {
         return new SearchPostResponse("success" , LocalDateTime.now() , postList);
 
     }
-    private User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("User email" + email + "not found"));
     }
-    private User findUserById(int id) {
+    public User findUserById(int id) {
         return userRepository.findById(id).orElseThrow(()->new UserNotFoundException("User with id: " + id + " not found"));
     }
     public Post findPostById(int post_Id){
         return postRepository.findById(post_Id).orElseThrow(()->new PostNotFoundException("Post with id" + post_Id + "not found"));
+    }
+
+    public String makeSlug(String input) {
+        String nowhitespace = whiteSpace.matcher(input).replaceAll("-");
+        String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
+        String slug = nonLatin.matcher(normalized).replaceAll("");
+        return slug.toLowerCase(Locale.ENGLISH);
     }
 }

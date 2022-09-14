@@ -1,17 +1,14 @@
 package com.elizabeth.restblogweek9.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-@Entity
+@Entity @EqualsAndHashCode
 @Table(name = "comment")
 public class Comment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

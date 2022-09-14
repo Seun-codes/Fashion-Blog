@@ -1,10 +1,7 @@
 package com.elizabeth.restblogweek9.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
  @Getter @Setter @Entity @Table(name ="post")
 @AllArgsConstructor @NoArgsConstructor
+ @EqualsAndHashCode
 public class Post {
      @Id
      @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,17 +1,14 @@
 package com.elizabeth.restblogweek9.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-@Getter @Setter @AllArgsConstructor @NoArgsConstructor
-@Entity
-@Table(name = "Likes")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@EqualsAndHashCode
+@Entity @Table(name = "Likes")
 public class Likes {
 
     @Id
@@ -31,4 +28,8 @@ public class Likes {
     @ManyToOne
     @JoinColumn(name = "post_id", referencedColumnName = "post_id")
     private Post post;
+
+
+    public Likes(int i, boolean b, LocalDateTime localDateTime, LocalDateTime localDateTime1, User user, Post post) {
+    }
 }
